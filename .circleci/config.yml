@@ -12,4 +12,5 @@ jobs:
           - RAILS_ENV: 'test'
     steps:
       - checkout
+      - run: rspec
       

@@ -5,8 +5,8 @@ RUN apt-get update -qq && \
                        libpq-dev \
                        nodejs
 
-RUN mkdir /app
 ENV APP_ROOT /app
+RUN mkdir $APP_ROOT
 WORKDIR $APP_ROOT
 
 ADD ./Gemfile $APP_ROOT/Gemfile

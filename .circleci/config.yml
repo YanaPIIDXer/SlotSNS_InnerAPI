@@ -2,7 +2,20 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: node:4.8.2
+      - image: ruby:2.5.3
+        environment:
+          - DATABASE_HOST: db
+          - DATABASE_USERNAME: root
+          - DATABASE_PASSWORD: root
+          - DATABASE_NAME: slot_sns
+          - BUNDLER_VERSION: 2.0.2
+          - RAILS_ENV: 'test'
+      - image: mysql:5.7
+        environment:
+          - MYSQL_ROOT_PASSWORD: root
+          - MYSQL_USER: develop
+          - MYSQL_PASSWORD: develop
+          - TZ: Asia/Tokyo
     steps:
       - checkout
-      - run: echo "CircleCI Test"
+      - run: rspec

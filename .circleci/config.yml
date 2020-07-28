@@ -18,4 +18,4 @@ jobs:
           - TZ: Asia/Tokyo
     steps:
       - checkout
-      - run: rspec
+      

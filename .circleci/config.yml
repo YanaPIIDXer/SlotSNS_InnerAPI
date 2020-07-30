@@ -47,9 +47,9 @@ jobs:
     docker:
       - image: ruby:2.5.3
         environment:
-          - DATABASE_HOST: db
-          - DATABASE_USERNAME: root
-          - DATABASE_PASSWORD: root
+          - DATABASE_HOST: ${PRODUCTION_DB_HOST}
+          - DATABASE_USERNAME: ${PRODUCTION_DB_USERNAME}
+          - DATABASE_PASSWORD: ${PRODUCTION_DB_PASSWORD}
           - DATABASE_NAME: slot_sns
           - BUNDLER_VERSION: 2.0.2
           - RAILS_ENV: 'production'

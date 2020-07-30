@@ -1,87 +1,49 @@
 version: 2.1
-jobs:
-  test:
-    docker:
-      - image: ruby:2.5.3
-        environment:
-          - DATABASE_HOST: db
-          - DATABASE_USERNAME: root
-          - DATABASE_PASSWORD: root
-          - DATABASE_NAME: slot_sns
-          - BUNDLER_VERSION: 2.0.2
-          - RAILS_ENV: 'test'
-      - image: mysql:5.7
-        environment:
-          - MYSQL_ROOT_PASSWORD: root
-          - MYSQL_USER: develop
-          - MYSQL_PASSWORD: develop
-          - TZ: Asia/Tokyo
-        name: db
-    steps:
-      - checkout
-      - run:
-          name: install bundles
-          command: |
-            gem install bundler -v 2.0.2
-            bundle install
-      - run:
-          name: Create Database
-          command: |
-            bundle exec rake db:create
-            bundle exec rake db:migrate  
-            bundle exec rake db:schema:loa
-      - run:
-          name: Run test codes with RSpec
-          command: |
-            mkdir /tmp/test-results
-            bundle exec rspec \
-            --out /tmp/test-results/rspec.xml
-
-      - store_test_results:
-          path: /tmp/test-results
-      - store_artifacts:
-          path: /tmp/test-results
-          destination: test-results
-
-  deploy:
-    docker:
-      - image: ruby:2.5.3
-        environment:
-          - DATABASE_HOST: ${PRODUCTION_DB_HOST}
-          - DATABASE_USERNAME: ${PRODUCTION_DB_USERNAME}
-          - DATABASE_PASSWORD: ${PRODUCTION_DB_PASSWORD}
-          - DATABASE_NAME: slot_sns
-          - BUNDLER_VERSION: 2.0.2
-          - RAILS_ENV: 'production'
-    steps:
-      - checkout
-      - run:
-          name: install bundles
-          command: |
-            gem install bundler -v 2.0.2
-            bundle install
-      - aws-ecr/build-and-push-image:
-          requires: install-bundle
-          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
-          repo: "InnerAPI"
-          region: ${AWS_DEFAULT_REGION}
-          tag: "${CIRCLE_SHA1}"
-      - aws-ecs/deploy-service-update:
-          requires:
-            - aws-ecr/build-and-push-image
-          aws-region: ${AWS_DEFAULT_REGION}
-          family: "InnerAPI"
-          cluster-name: "InnerAPI"
-          container-image-name-updates: "container=InnerAPI,tag=${CIRCLE_SHA1}"
-
+orbs:
+  aws-ecr: circleci/aws-ecr@0.0.10
+  aws-ecs: circleci/aws-ecs@0.0.8
 workflows:
-  version: 2
-  test_and_deploy:
+  test:
     jobs:
-      - test
-      - deploy:
-          filters:
-            branches:
-              only: master
-          requires:
-            - test
+      - run-test:
+          docker:
+            - image: ruby:2.5.3
+              environment:
+                - DATABASE_HOST: db
+                - DATABASE_USERNAME: root
+                - DATABASE_PASSWORD: root
+                - DATABASE_NAME: slot_sns
+                - BUNDLER_VERSION: 2.0.2
+                - RAILS_ENV: 'test'
+            - image: mysql:5.7
+              environment:
+                - MYSQL_ROOT_PASSWORD: root
+                - MYSQL_USER: develop
+                - MYSQL_PASSWORD: develop
+                - TZ: Asia/Tokyo
+              name: db
+          steps:
+            - checkout
+            - run:
+                name: install bundles
+                command: |
+                  gem install bundler -v 2.0.2
+                  bundle install
+            - run:
+                name: Create Database
+                command: |
+                  bundle exec rake db:create
+                  bundle exec rake db:migrate  
+                  bundle exec rake db:schema:loa
+            - run:
+                name: Run test codes with RSpec
+                command: |
+                  mkdir /tmp/test-results
+                  bundle exec rspec \
+                  --out /tmp/test-results/rspec.xml
+      
+            - store_test_results:
+                path: /tmp/test-results
+            - store_artifacts:
+                path: /tmp/test-results
+                destination: test-results

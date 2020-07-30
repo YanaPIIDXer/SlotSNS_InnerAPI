@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  build:
+  test:
     docker:
       - image: ruby:2.5.3
         environment:
@@ -43,3 +43,23 @@ jobs:
       - store_artifacts:
           path: /tmp/test-results
           destination: test-results
+  deploy:
+    docker:
+      - image: ruby:2.5.3
+        environment:
+          - DATABASE_HOST: db
+          - DATABASE_USERNAME: root
+          - DATABASE_PASSWORD: root
+          - DATABASE_NAME: slot_sns
+          - BUNDLER_VERSION: 2.0.2
+          - RAILS_ENV: 'production'
+    steps:
+      - checkout
+
+workflows:
+  version: 2
+  test_and_deploy:
+    jobs:
+      - test
+      - deploy:
+          requires: test

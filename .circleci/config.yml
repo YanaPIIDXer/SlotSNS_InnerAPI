@@ -29,8 +29,7 @@ jobs:
           command: |
             bundle exec rake db:create
             bundle exec rake db:migrate  
-            bundle exec rake db:schema:load
-
+            bundle exec rake db:schema:loa
       - run:
           name: Run test codes with RSpec
           command: |
@@ -43,6 +42,7 @@ jobs:
       - store_artifacts:
           path: /tmp/test-results
           destination: test-results
+
   deploy:
     docker:
       - image: ruby:2.5.3
@@ -55,16 +55,17 @@ jobs:
           - RAILS_ENV: 'production'
     steps:
       - checkout
-      - install-bundle:
-        command: |
-          gem install bundler -v 2.0.2
-          bundle install
+      - run:
+          name: install bundles
+          command: |
+            gem install bundler -v 2.0.2
+            bundle install
       - aws-ecr/build-and-push-image:
-        requires: install-bundle
-        account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
-        repo: "InnerAPI"
-        region: ${AWS_DEFAULT_REGION}
-        tag: "${CIRCLE_SHA1}"
+          requires: install-bundle
+          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+          repo: "InnerAPI"
+          region: ${AWS_DEFAULT_REGION}
+          tag: "${CIRCLE_SHA1}"
       - aws-ecs/deploy-service-update:
           requires:
             - aws-ecr/build-and-push-image

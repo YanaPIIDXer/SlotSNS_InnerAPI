@@ -1,6 +1,9 @@
 version: 2.1
+orbs:
+  aws-ecr: circleci/aws-ecr@0.0.10
+  aws-ecs: circleci/aws-ecs@0.0.8
 jobs:
-  build:
+  test:
     docker:
       - image: ruby:2.5.3
         environment:
@@ -30,7 +33,6 @@ jobs:
             bundle exec rake db:create
             bundle exec rake db:migrate  
             bundle exec rake db:schema:load
-
       - run:
           name: Run test codes with RSpec
           command: |
@@ -43,3 +45,33 @@ jobs:
       - store_artifacts:
           path: /tmp/test-results
           destination: test-results
+
+workflows:
+  test:
+    jobs:
+      - test
+
+  deploy:
+    jobs:
+      - aws-ecr/build_and_push_image:
+          account-url: AWS_ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          repo: "InnerAPI"
+          region: AWS_DEFAULT_REGION
+          tag: "${CIRCLE_SHA1}"
+          filters:
+            branches:
+              only:
+                - master
+      - aws-ecs/deploy-service-update:
+          requires:
+            - aws-ecr/build_and_push_image
+          aws-region: AWS_DEFAULT_REGION
+          family: "InnerAPI"
+          cluster-name: "InnerAPI"
+          container-image-name-updates: "container=InnerAPI,tag=${CIRCLE_SHA1}"
+          filters:
+            branches:
+              only:
+                - master

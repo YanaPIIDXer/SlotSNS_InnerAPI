@@ -2,48 +2,51 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@0.0.10
   aws-ecs: circleci/aws-ecs@0.0.8
+jobs:
+  test:
+    docker:
+      - image: ruby:2.5.3
+        environment:
+          - DATABASE_HOST: db
+          - DATABASE_USERNAME: root
+          - DATABASE_PASSWORD: root
+          - DATABASE_NAME: slot_sns
+          - BUNDLER_VERSION: 2.0.2
+          - RAILS_ENV: 'test'
+      - image: mysql:5.7
+        environment:
+          - MYSQL_ROOT_PASSWORD: root
+          - MYSQL_USER: develop
+          - MYSQL_PASSWORD: develop
+          - TZ: Asia/Tokyo
+        name: db
+    steps:
+      - checkout
+      - run:
+          name: install bundles
+          command: |
+            gem install bundler -v 2.0.2
+            bundle install
+      - run:
+          name: Create Database
+          command: |
+            bundle exec rake db:create
+            bundle exec rake db:migrate  
+            bundle exec rake db:schema:loa
+      - run:
+          name: Run test codes with RSpec
+          command: |
+            mkdir /tmp/test-results
+            bundle exec rspec \
+            --out /tmp/test-results/rspec.xml
+
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+
 workflows:
   test:
     jobs:
-      - run-test:
-          docker:
-            - image: ruby:2.5.3
-              environment:
-                - DATABASE_HOST: db
-                - DATABASE_USERNAME: root
-                - DATABASE_PASSWORD: root
-                - DATABASE_NAME: slot_sns
-                - BUNDLER_VERSION: 2.0.2
-                - RAILS_ENV: 'test'
-            - image: mysql:5.7
-              environment:
-                - MYSQL_ROOT_PASSWORD: root
-                - MYSQL_USER: develop
-                - MYSQL_PASSWORD: develop
-                - TZ: Asia/Tokyo
-              name: db
-          steps:
-            - checkout
-            - run:
-                name: install bundles
-                command: |
-                  gem install bundler -v 2.0.2
-                  bundle install
-            - run:
-                name: Create Database
-                command: |
-                  bundle exec rake db:create
-                  bundle exec rake db:migrate  
-                  bundle exec rake db:schema:loa
-            - run:
-                name: Run test codes with RSpec
-                command: |
-                  mkdir /tmp/test-results
-                  bundle exec rspec \
-                  --out /tmp/test-results/rspec.xml
-      
-            - store_test_results:
-                path: /tmp/test-results
-            - store_artifacts:
-                path: /tmp/test-results
-                destination: test-results
+      - test

@@ -50,3 +50,19 @@ workflows:
   test:
     jobs:
       - test
+
+  deploy:
+    jobs:
+      - aws-ecr/build_and_push_image:
+          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+          repo: "InnerAPI"
+          region: ${AWS_DEFAULT_REGION}
+          tag: "${CIRCLE_SHA1}"
+      - aws-ecs/deploy-service-update:
+          requires:
+            - aws-ecr/build_and_push_image
+          aws-region: ${AWS_DEFAULT_REGION}
+          family: "InnerAPI"
+          cluster-name: "InnerAPI"
+          container-image-name-updates: "container=InnerAPI,tag=${CIRCLE_SHA1}"
+          

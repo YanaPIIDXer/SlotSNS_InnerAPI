@@ -57,7 +57,11 @@ workflows:
 
   deploy:
     jobs:
-      - test
+      - test:
+          filters:
+            branches:
+              only:
+                - master
       - aws-ecr/build_and_push_image:
           requires:
             - test

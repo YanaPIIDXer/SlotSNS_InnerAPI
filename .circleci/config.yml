@@ -34,10 +34,6 @@ jobs:
             bundle exec rake db:migrate  
             bundle exec rake db:schema:load
       - run:
-          name: Boot Application Test
-          command: |
-            rails s -p 3000 -b "0.0.0.0"
-      - run:
           name: Run test codes with RSpec
           command: |
             mkdir /tmp/test-results

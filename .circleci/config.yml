@@ -69,8 +69,8 @@ workflows:
             - aws-ecr/build_and_push_image
           aws-region: AWS_DEFAULT_REGION
           family: "InnerAPI"
-          cluster-name: "arn:aws:ecs:${AWS_DEFAULT_REGION}:${AWS_ACCOUNT_ID}:cluster/InnerAPI"
-          container-image-name-updates: "container=InnerAPI,tag=${CIRCLE_SHA1}"
+          cluster-name: "SlotSNSInnerAPI"
+          container-image-name-updates: "container=SlotSNSInnerAPI,tag=${CIRCLE_SHA1}"
           filters:
             branches:
               only:

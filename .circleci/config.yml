@@ -70,6 +70,7 @@ workflows:
           aws-region: AWS_DEFAULT_REGION
           family: "InnerAPI"
           cluster-name: "SlotSNSInnerAPI"
+          service-name: "SlotSNSInnerAPI"
           container-image-name-updates: "container=InnerAPI,tag=latest"
           filters:
             branches:

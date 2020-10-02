@@ -4,7 +4,7 @@ RSpec.describe RegisterController, type: :controller do
     describe 'Register API' do
         # ステータスコードが正常か？
         it "StatusCode 200" do
-            get '/register'
+            get 'index'
             expect(response.status).to eq(200)
         end
     end

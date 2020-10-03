@@ -100,5 +100,26 @@ RSpec.describe PostController, type: :controller do
       post :delete
       expect(response).to have_http_status(:success)
     end
+
+    it "Delete post" do
+      target = FactoryBot.create(:post)
+
+      params = {id: target.id}
+      post :delete, params: params
+
+      json = JSON.parse(response.body)
+      expect(json['result']).to be_truthy
+
+      is_deleted = (Post.find_by(id: target.id) == nil)
+      expect(is_deleted).to be_truthy
+    end
+
+    it "Invalid post ID" do
+      params = {id: 1}
+      post :delete, params: params
+
+      json = JSON.parse(response.body)
+      expect(json['result']).to be_falsy
+    end
   end
 end

@@ -36,6 +36,15 @@ class PostController < ApplicationController
 
   def delete
     response = {'result' => false}
+    id = params[:id]
+
+    post = Post.find_by(id: id)
+    if post == nil
+      render json: response
+      return
+    end
+
+    response['result'] = post.destroy
     render json: response
   end
 end

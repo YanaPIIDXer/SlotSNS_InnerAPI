@@ -9,9 +9,5 @@ RSpec.describe HealthController, type: :controller do
       json = JSON.parse(response.body)
       expect(json['condition']).to eq('ok')
     end
-
-    it 'fuck' do
-      expect(false).to eq(true)
-    end
   end
 end

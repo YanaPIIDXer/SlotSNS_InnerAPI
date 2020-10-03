@@ -55,6 +55,15 @@ jobs:
                             BUILD_URL:${CIRCLE_BUILD_URL}\n
                             PULL_REQUESTS:${CIRCLE_PULL_REQUESTS}'
           webhook: ${SLACK_WEBHOOK}
+  notice_deploy:
+    machine:
+      image: ubuntu-1604:201903-01
+    steps:
+      - slack/notify:
+          channel: ${SLACK_CHANNEL_ID}
+          message: '${CIRCLE_PROJECT_REPONAME}のデプロイに成功しました。'
+          webhook: ${SLACK_WEBHOOK}
+
 
 workflows:
   test:
@@ -93,7 +102,11 @@ workflows:
             branches:
               only:
                 - master
-      - slack/status:
-          success_message: '${CIRCLE_PROJECT_REPONAME}のデプロイに成功しました。'
-          failure_message: '${CIRCLE_PROJECT_REPONAME}のデプロイに失敗しました。'
-          webhook: ${SLACK_WEBHOOK}
+      - notice_deploy:
+          requires:
+            - aws-ecs/deploy-service-update
+          filters:
+            branches:
+              only:
+                - master
+          

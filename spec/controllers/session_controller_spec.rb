@@ -87,7 +87,7 @@ RSpec.describe SessionController, type: :controller do
 
       get :index, params: { email: email }
       json = JSON.parse(response.body)
-      expect(json['result']).to be_truthy
+      expect(json['result']).to be_falsy
     end
 
     it "Not login" do

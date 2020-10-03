@@ -13,6 +13,26 @@ RSpec.describe PostController, type: :controller do
       post :create
       expect(response).to have_http_status(:success)
     end
+
+    it "create new post" do
+      title = "Test"
+      params = {title: title, body: "Test"}
+      post :create, params: params
+
+      json = JSON.parse(response.body)
+      expect(json['result']).to be_truthy
+
+      created = Post.find_by(title: title)
+      expect(created).to be_truhty    # created != nil
+    end
+
+    it "Empty text is invalid" do
+      params = {title: "", body: ""}
+      post :create, params: params
+      
+      json = JSON.parse(response.body)
+      expect(json['result']).to be_falsy
+    end
   end
 
   describe "POST #update" do

@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe UserController, type: :controller do
+  NAME = "Name"
   EMAIL = "example@example.com"
   PASSWORD = "Password"
   
@@ -29,20 +30,20 @@ RSpec.describe UserController, type: :controller do
 
   describe "POST #create" do
     it "returns http success" do
-      params = { email: EMAIL, password: PASSWORD }
+      params = { name: NAME, email: EMAIL, password: PASSWORD }
       post :create, params: params
       expect(response).to have_http_status(:success)
     end
 
     it "Create User" do
-      params = { email: EMAIL, password: PASSWORD }
+      params = { name: NAME, email: EMAIL, password: PASSWORD }
       post :create, params: params
       json = JSON.parse(response.body)
       expect(json['result']).to be_truthy
     end
 
     it "Duplicate email" do
-      User.create(name: "Name", email: EMAIL, password: PASSWORD)
+      User.create(name: NAME, email: EMAIL, password: PASSWORD)
       params = { email: EMAIL, password: PASSWORD }
       post :create, params: params
       json = JSON.parse(response.body)
@@ -50,7 +51,7 @@ RSpec.describe UserController, type: :controller do
     end
 
     it "Validation error" do
-      params = { email: "example", password: PASSWORD }
+      params = { name: NAME, email: "example", password: PASSWORD }
       post :create, params:params
       json = JSON.parse(response.body)
       expect(json['result']).to be_falsy
@@ -65,7 +66,7 @@ RSpec.describe UserController, type: :controller do
       json = JSON.parse(response.body)
       expect(json['result']).to be_falsy
       
-      params[:email] = { email: EMAIL, password: "" }
+      params[:email] = { name: NAME, email: EMAIL, password: "" }
       post :create, params:params
       json = JSON.parse(response.body)
       expect(json['result']).to be_falsy

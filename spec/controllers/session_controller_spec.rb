@@ -16,6 +16,20 @@ RSpec.describe SessionController, type: :controller do
       post :create, params: params
       expect(response).to have_http_status(:success)
     end
+
+    it "Login" do
+      params = { email: "example@example.com", password: "Password" }
+      post :create, params: params
+      json = JSON.parse(response.body)
+      expect(json['result']).to be_truthy
+    end
+
+    it "Invalid user" do
+      params = { email: "example@example.com", password: "Password" }
+      post :create, params: params
+      json = JSON.parse(response.body)
+      expect(json['result']).to be_falsy
+    end
   end
 
   describe "POST #delete" do

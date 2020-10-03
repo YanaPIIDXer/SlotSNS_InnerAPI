@@ -39,5 +39,9 @@ RSpec.describe User, type: :model do
 
     fail_user = User.new(name: 'Name', password: 'Password', email: 'example')
     expect(fail_user.valid?).to be_falsy
+    fail_user = User.new(name: 'Name', password: 'Password', email: 'example@')
+    expect(fail_user.valid?).to be_falsy
+    fail_user = User.new(name: 'Name', password: 'Password', email: 'example@example.com@example.com')
+    expect(fail_user.valid?).to be_falsy
   end
 end

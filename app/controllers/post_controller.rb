@@ -6,6 +6,11 @@ class PostController < ApplicationController
 
   def create
     response = {'result' => false}
+    if session[:email] == nil
+      render json: response
+      return
+    end
+
     title = params[:title]
     body = params[:body]
 
@@ -17,6 +22,10 @@ class PostController < ApplicationController
 
   def update
     response = {'result' => false}
+    if session[:email] == nil
+      render json: response
+      return
+    end
 
     id = params[:id]
     post = Post.find_by(id: id)
@@ -36,8 +45,12 @@ class PostController < ApplicationController
 
   def delete
     response = {'result' => false}
-    id = params[:id]
+    if session[:email] == nil
+      render json: response
+      return
+    end
 
+    id = params[:id]
     post = Post.find_by(id: id)
     if post == nil
       render json: response

@@ -28,6 +28,9 @@ class SessionController < ApplicationController
       render json: response
       return
     end
+
+    session[:email] = nil
+    response['result'] = true
     
     render json: response
   end

@@ -61,6 +61,7 @@ RSpec.describe PostController, type: :controller do
       expect(json['result']).to be_truthy
 
       updated = Post.find(target.id)
+      expect(updated != nil).to be_truthy
       expect(updated.title == title).to be_truthy
       expect(updated.body == body).to be_truthy
     end
@@ -69,6 +70,26 @@ RSpec.describe PostController, type: :controller do
       params = {id: 1, title: "title", body: "body"}
       post :update, params: params
 
+      json = JSON.parse(response.body)
+      expect(json['result']).to be_falsy
+    end
+
+    it "Empty text is invalid" do
+      target = FactoryBot.create(:post)
+
+      params = {id: target.id, title: "", body: ""}
+      post :update, params: params
+      
+      json = JSON.parse(response.body)
+      expect(json['result']).to be_falsy
+    end
+
+    it "Nil text is invalid" do
+      target = FactoryBot.create(:post)
+
+      params = {id: target.id, title: nil, body: nil}
+      post :update, params: params
+      
       json = JSON.parse(response.body)
       expect(json['result']).to be_falsy
     end

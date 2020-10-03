@@ -11,21 +11,19 @@ RSpec.describe UserController, type: :controller do
     end
 
     it "User List" do
-      User.create(name: "User1", email: "example1@example.com", password: "Password")
-      User.create(name: "User2", email: "example2@example.com", password: "Password")
-      User.create(name: "User3", email: "example3@example.com", password: "Password")
-      User.create(name: "User4", email: "example4@example.com", password: "Password")
-      User.create(name: "User5", email: "example5@example.com", password: "Password")
+      for i in 1..5 do
+        User.create(name: "User#{i}", email: "example#{i}@example.com", password: "Password")
+      end
 
       get :index
       json = JSON.parse(response.body)
-      expect(json['list']).to contain_exactly(
-        {:name => "User1", :email => "example1@example.com"},
-        {:name => "User2", :email => "example2@example.com"},
-        {:name => "User3", :email => "example3@example.com"},
-        {:name => "User4", :email => "example4@example.com"},
-        {:name => "User5", :email => "example5@example.com"}
-      )
+      list = json['list']
+      i = 1
+      for user in list do
+        expect(user['name']).to eq("User#{i}")
+        expect(user['email']).to eq("example#{i}@example.com")
+        i = i + 1
+      end
     end
   end
 

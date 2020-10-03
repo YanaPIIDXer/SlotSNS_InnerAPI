@@ -1,6 +1,13 @@
 class UserController < ApplicationController
   def index
-    response = { 'result' => false }
+    list = []
+    
+    users = User.all
+    for user in users do
+      list.push({:name => user.name, :email => user.email})
+    end
+
+    response = { 'list' => list }
     render json: response
   end
 

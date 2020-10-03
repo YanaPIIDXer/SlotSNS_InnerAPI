@@ -1,20 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe SessionController, type: :controller do
+  before do
+    @user = FactoryBot.create(:user)
+  end
 
   describe "GET #index" do
     it "returns http success" do
-      params = { email: "example@example.com", password: "Password" }
+      params = { email: @user.email, password: @user.password }
       get :index
       expect(response).to have_http_status(:success)
     end
 
     it "Is login" do
-      email = "example@example.com"
-      password = "Password"
-      User.create(name: "Name", password: password, email: email)
-
-      params = { email: email, password: password }
+      params = { email: @user.email, password: @user.password }
       post :create, params: params
 
       get :index
@@ -22,7 +21,7 @@ RSpec.describe SessionController, type: :controller do
       expect(json['result']).to be_truthy
     end
 
-    it "Is not login" do      
+    it "Is not login" do
       get :index
       json = JSON.parse(response.body)
       expect(json['result']).to be_falsy
@@ -31,24 +30,20 @@ RSpec.describe SessionController, type: :controller do
 
   describe "POST #create" do
     it "returns http success" do
-      params = { email: "example@example.com", password: "Password" }
+      params = { email: @user.email, password: @user.password }
       post :create, params: params
       expect(response).to have_http_status(:success)
     end
 
     it "Login" do
-      email = "example@example.com"
-      password = "Password"
-      User.create(name: "Name", password: password, email: email)
-
-      params = { email: email, password: password }
+      params = { email: @user.email, password: @user.password }
       post :create, params: params
       json = JSON.parse(response.body)
       expect(json['result']).to be_truthy
     end
 
     it "Invalid user" do
-      params = { email: "example@example.com", password: "Password" }
+      params = { email: "invalid@example.com", password: "InvalidPassword" }
       post :create, params: params
       json = JSON.parse(response.body)
       expect(json['result']).to be_falsy
@@ -62,11 +57,7 @@ RSpec.describe SessionController, type: :controller do
     end
 
     it "Logout" do
-      email = "example@example.com"
-      password = "Password"
-      User.create(name: "Name", password: password, email: email)
-
-      params = { email: email, password: password }
+      params = { email: @user.email, password: @user.password }
       post :create, params: params
 
       post :delete
@@ -75,11 +66,7 @@ RSpec.describe SessionController, type: :controller do
     end
 
     it "Check logout successful" do
-      email = "example@example.com"
-      password = "Password"
-      User.create(name: "Name", password: password, email: email)
-
-      params = { email: email, password: password }
+      params = { email: @user.email, password: @user.password }
       post :create, params: params
 
       post :delete
@@ -90,16 +77,6 @@ RSpec.describe SessionController, type: :controller do
     end
 
     it "Not login" do
-      email = "example@example.com"
-      password = "Password"
-      User.create(name: "Name", password: password, email: email)
-
-      post :delete
-      json = JSON.parse(response.body)
-      expect(json['result']).to be_falsy
-    end
-
-    it "Invalid user" do
       post :delete
       json = JSON.parse(response.body)
       expect(json['result']).to be_falsy

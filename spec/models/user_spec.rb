@@ -6,7 +6,7 @@ RSpec.describe User, type: :model do
     password = 'Password'
     email = 'example@example.com'
     user = User.new(name: name, password: password, email: email)
-    result = user.save!
+    result = user.valid? && user.save!
     expect(result).to be_truthy
   end
 

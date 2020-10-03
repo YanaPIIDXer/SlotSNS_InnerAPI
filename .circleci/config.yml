@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@0.0.10
   aws-ecs: circleci/aws-ecs@0.0.8
+  slack: circleci/slack@3.4.2
 jobs:
   test:
     docker:
@@ -48,6 +49,12 @@ jobs:
       - store_artifacts:
           path: /tmp/test-results
           destination: test-results
+      - slack/status:
+          fail_only: true
+          failure_message: '${CIRCLE_PROJECT_REPONAME}/${CIRCIE_BLANCH}のテストに失敗しました。\n
+                            BUILD_URL:${CIRCLE_BUILD_URL}\n
+                            PULL_REQUESTS:${CIRCLE_PULL_REQUESTS}'
+          webhook: ${SLACK_WEBHOOK}
 
 workflows:
   test:
@@ -86,3 +93,7 @@ workflows:
             branches:
               only:
                 - master
+      - slack/status:
+          success_message: '${CIRCLE_PROJECT_REPONAME}のデプロイに成功しました。'
+          failure_message: '${CIRCLE_PROJECT_REPONAME}のデプロイに失敗しました。'
+          webhook: ${SLACK_WEBHOOK}

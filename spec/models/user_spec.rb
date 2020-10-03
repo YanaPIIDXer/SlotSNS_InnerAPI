@@ -32,4 +32,12 @@ RSpec.describe User, type: :model do
     user = User.new(name: 'Name', password: plain_password, email: 'example@example.com')
     expect(user.password_digest).not_to eq(plain_password)
   end
+
+  it 'Email validation' do
+    success_user = User.new(name: 'Name', password: 'Password', email: 'example@example.com')
+    expect(success_user.valid?).to be_truthy
+
+    fail_user = User.new(name: 'Name', password: 'Password', email: 'example')
+    expect(fail_user.valid?).to be_falsy
+  end
 end

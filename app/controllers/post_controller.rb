@@ -6,6 +6,12 @@ class PostController < ApplicationController
 
   def create
     response = {'result' => false}
+    title = params[:title]
+    body = params[:body]
+
+    post = Post.new(title: title, body: body)
+    response['result'] = (post.valid? && post.save!)
+
     render json: response
   end
 

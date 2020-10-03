@@ -22,12 +22,20 @@ RSpec.describe PostController, type: :controller do
       json = JSON.parse(response.body)
       expect(json['result']).to be_truthy
 
-      created = Post.find_by(title: title)
-      expect(created).to be_truhty    # created != nil
+      is_created = (Post.find_by(title: title) != nil)
+      expect(is_created).to be_truthy
     end
 
     it "Empty text is invalid" do
       params = {title: "", body: ""}
+      post :create, params: params
+      
+      json = JSON.parse(response.body)
+      expect(json['result']).to be_falsy
+    end
+
+    it "Nil text is invalid" do
+      params = {title: nil, body: nil}
       post :create, params: params
       
       json = JSON.parse(response.body)

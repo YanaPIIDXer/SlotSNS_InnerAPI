@@ -31,5 +31,6 @@ module App
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+    config.reload_classes_only_on_change = false
   end
 end

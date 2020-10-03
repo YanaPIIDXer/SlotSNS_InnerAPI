@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@0.0.10
   aws-ecs: circleci/aws-ecs@0.0.8
+  slack: circleci/slack@3.4.2
 jobs:
   test:
     docker:
@@ -38,13 +39,31 @@ jobs:
           command: |
             mkdir /tmp/test-results
             bundle exec rspec \
-            --out /tmp/test-results/rspec.xml
+            --format RspecJunitFormatter \
+            --out /tmp/test-results/rspec.xml \
+            --format progress \
+            $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
 
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
           path: /tmp/test-results
           destination: test-results
+      - slack/status:
+          fail_only: true
+          failure_message: '${CIRCLE_PROJECT_REPONAME}/${CIRCIE_BLANCH}のテストに失敗しました。\n
+                            BUILD_URL:${CIRCLE_BUILD_URL}\n
+                            PULL_REQUESTS:${CIRCLE_PULL_REQUESTS}'
+          webhook: ${SLACK_WEBHOOK}
+  notice_deploy:
+    machine:
+      image: ubuntu-1604:201903-01
+    steps:
+      - slack/notify:
+          channel: ${SLACK_CHANNEL_ID}
+          message: '${CIRCLE_PROJECT_REPONAME}のデプロイに成功しました。'
+          webhook: ${SLACK_WEBHOOK}
+
 
 workflows:
   test:
@@ -83,3 +102,11 @@ workflows:
             branches:
               only:
                 - master
+      - notice_deploy:
+          requires:
+            - aws-ecs/deploy-service-update
+          filters:
+            branches:
+              only:
+                - master
+          

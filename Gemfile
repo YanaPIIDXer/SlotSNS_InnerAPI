@@ -43,7 +43,10 @@ end
 # Rspec
 group :development, :test do
   gem 'rspec-rails', '~> 3.6'
+  gem 'rspec_junit_formatter'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+gem 'bcrypt', '3.1.13'

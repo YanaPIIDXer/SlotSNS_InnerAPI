@@ -75,7 +75,7 @@ RSpec.describe SessionController, type: :controller do
       expect(json['result']).to be_truthy
     end
 
-    it "Check logout" do
+    it "Check logout successful" do
       email = "example@example.com"
       password = "Password"
       User.create(name: "Name", password: password, email: email)

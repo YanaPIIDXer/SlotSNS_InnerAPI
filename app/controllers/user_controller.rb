@@ -12,7 +12,13 @@ class UserController < ApplicationController
   end
 
   def create
-    response = { 'result' => false }
+    name = params[:name]
+    password = params[:password]
+    email = params[:email]
+
+    user = User.new(name: name, password: password, email: email)
+    result = user.valid? && user.save!
+    response = { 'result' => result }
     render json: response
   end
 

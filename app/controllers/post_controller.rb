@@ -17,6 +17,20 @@ class PostController < ApplicationController
 
   def update
     response = {'result' => false}
+
+    id = params[:id]
+    post = Post.find_by(id: id)
+    if post == nil
+      render json: response
+      return
+    end
+
+    title = params[:title]
+    body = params[:body]
+    post.title = title
+    post.body = body
+    response['result'] = (post.valid? && post.save!)
+    
     render json: response
   end
 

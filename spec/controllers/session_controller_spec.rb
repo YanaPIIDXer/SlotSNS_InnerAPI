@@ -5,7 +5,7 @@ RSpec.describe SessionController, type: :controller do
   describe "GET #index" do
     it "returns http success" do
       params = { email: "example@example.com", password: "Password" }
-      get :index, params: params
+      get :index
       expect(response).to have_http_status(:success)
     end
 
@@ -17,13 +17,13 @@ RSpec.describe SessionController, type: :controller do
       params = { email: email, password: password }
       post :create, params: params
 
-      get :index, params: params
+      get :index
       json = JSON.parse(response.body)
       expect(json['result']).to be_truthy
     end
 
     it "Is not login" do      
-      get :index, params: { email: "example@example.com", password: "Password" }
+      get :index
       json = JSON.parse(response.body)
       expect(json['result']).to be_falsy
     end
@@ -57,8 +57,7 @@ RSpec.describe SessionController, type: :controller do
 
   describe "POST #delete" do
     it "returns http success" do
-      params = { email: "example@example.com", password: "Password" }
-      post :delete, params: params
+      post :delete
       expect(response).to have_http_status(:success)
     end
 
@@ -70,7 +69,7 @@ RSpec.describe SessionController, type: :controller do
       params = { email: email, password: password }
       post :create, params: params
 
-      post :delete, params: { email: email }
+      post :delete
       json = JSON.parse(response.body)
       expect(json['result']).to be_truthy
     end
@@ -83,9 +82,9 @@ RSpec.describe SessionController, type: :controller do
       params = { email: email, password: password }
       post :create, params: params
 
-      post :delete, params: { email: email }
+      post :delete
 
-      get :index, params: { email: email }
+      get :index
       json = JSON.parse(response.body)
       expect(json['result']).to be_falsy
     end
@@ -95,13 +94,13 @@ RSpec.describe SessionController, type: :controller do
       password = "Password"
       User.create(name: "Name", password: password, email: email)
 
-      post :delete, params: { email: email }
+      post :delete
       json = JSON.parse(response.body)
       expect(json['result']).to be_falsy
     end
 
     it "Invalid user" do
-      post :delete, params: { email: "example@example.com" }
+      post :delete
       json = JSON.parse(response.body)
       expect(json['result']).to be_falsy
     end

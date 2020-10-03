@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe RegisterController, type: :controller do
     describe 'Register API' do
         it 'StatusCode check' do
-            post 'index'
+            params = { name: 'Name', password: 'Password', email: 'example@example.com' }
+            post 'index', params: params
             expect(response.status).to eq(200)
         end
 

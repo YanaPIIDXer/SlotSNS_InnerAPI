@@ -12,6 +12,12 @@ class SessionController < ApplicationController
       return
     end
 
+    user = User.find_by(email: params[:email])
+    if user != nil && user.authenticate(params[:password])
+      response['result'] = true
+      session[:id] = user.id
+    end
+
     render json: response
   end
 

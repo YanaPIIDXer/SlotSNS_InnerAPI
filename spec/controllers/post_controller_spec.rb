@@ -48,6 +48,30 @@ RSpec.describe PostController, type: :controller do
       post :update
       expect(response).to have_http_status(:success)
     end
+
+    it "update post" do
+      target = FactoryBot.create(:post)
+      title = "Updated"
+      body = "Updated"
+      
+      params = {id: target.id, title: title, body: body}
+      post :update, params: params
+
+      json = JSON.parse(response.body)
+      expect(json['result']).to be_truthy
+
+      updated = Post.find(target.id)
+      expect(updated.title == title).to be_truthy
+      expect(updated.body == body).to be_truthy
+    end
+
+    it "Invalid post ID" do
+      params = {id: 1, title: "title", body: "body"}
+      post :update, params: params
+
+      json = JSON.parse(response.body)
+      expect(json['result']).to be_falsy
+    end
   end
 
   describe "POST #delete" do

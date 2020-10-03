@@ -18,7 +18,11 @@ RSpec.describe SessionController, type: :controller do
     end
 
     it "Login" do
-      params = { email: "example@example.com", password: "Password" }
+      email = "example@example.com"
+      password = "Password"
+      User.create(name: "Name", password: password, email: email)
+
+      params = { email: email, password: password }
       post :create, params: params
       json = JSON.parse(response.body)
       expect(json['result']).to be_truthy
@@ -39,5 +43,4 @@ RSpec.describe SessionController, type: :controller do
       expect(response).to have_http_status(:success)
     end
   end
-
 end

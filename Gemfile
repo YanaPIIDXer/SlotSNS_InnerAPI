@@ -44,6 +44,7 @@ end
 group :development, :test do
   gem 'rspec-rails', '~> 3.6'
   gem 'rspec_junit_formatter'
+  gem 'capybara'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

@@ -75,7 +75,22 @@ RSpec.describe SessionController, type: :controller do
       expect(json['result']).to be_truthy
     end
 
-    it "Not Login" do
+    it "Check logout" do
+      email = "example@example.com"
+      password = "Password"
+      User.create(name: "Name", password: password, email: email)
+
+      params = { email: email, password: password }
+      post :create, params: params
+
+      post :delete, params: { email: email }
+
+      get :index, params: { email: email }
+      json = JSON.parse(response.body)
+      expect(json['result']).to be_truthy
+    end
+
+    it "Not login" do
       email = "example@example.com"
       password = "Password"
       User.create(name: "Name", password: password, email: email)
@@ -85,7 +100,7 @@ RSpec.describe SessionController, type: :controller do
       expect(json['result']).to be_falsy
     end
 
-    it "Invalid User" do
+    it "Invalid user" do
       post :delete, params: { email: "example@example.com" }
       json = JSON.parse(response.body)
       expect(json['result']).to be_falsy
